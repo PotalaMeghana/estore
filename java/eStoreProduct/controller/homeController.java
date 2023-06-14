@@ -34,6 +34,7 @@ public class homeController {
 		// call the view
 		return "home";
 	}
+	
 
 	@RequestMapping(value = "/loggedIn", method = RequestMethod.GET)
 	public String getHomeLogged(Model model) {
@@ -73,6 +74,7 @@ public class homeController {
 		try {
 		cdao.updatelastlogin(cust.getCustId());
 		//model.addAttribute();
+		
 		session.setAttribute("customer", cust);
 		}
 		catch(Exception e)
@@ -81,8 +83,10 @@ public class homeController {
 		}
 		System.out.println("checking sign in 2");
 		if (cust != null) {
-			session.setAttribute("customer", cust); // Store customer object in the session
+			session.setAttribute("customer", cust); 
+			// Store customer object in the session
 			flag = true;
+			//session.setAttribute("loginstatus", flag);
 		}
 		custCredModel cust1 = (custCredModel) session.getAttribute("customer");
 		model.addAttribute("cust1", cust1);
@@ -90,35 +94,7 @@ public class homeController {
 		return "home";
 	}
 
-	/*
-	 * @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET) public
-	 * String forgotPswd(Model model) { System.out.println("mail forget Page");
-	 * 
-	 * // // call the view return "forgotPage"; }
-	 */
-
-	// On clicking my profile should display profile.jsp
-
-	@RequestMapping(value = "/profilePage")
-	public String sendProfilePage(Model model, HttpSession session) {
-		custCredModel cust = (custCredModel) session.getAttribute("customer");
-		System.out.println(cust.getCustId());
-		model.addAttribute("cust", cust);
-		return "profile";
-	}
-
-	// on clicking update Profile in profile page
-	@RequestMapping(value = "/updateProfile", method = RequestMethod.POST)
-	public String userupdate(@ModelAttribute("Customer") custCredModel cust, Model model, HttpSession session) {
-		cdao.updatecustomer(cust);
-		custCredModel custt = cdao.getCustomerById(cust.getCustId());
-		System.out.print(custt.getCustLocation());
-		if (custt != null) {
-			model.addAttribute("cust", custt);
-		}
-		return "profile";
-	}
-
+	
 	@RequestMapping(value = "/signInCreateAccount", method = RequestMethod.POST)
 	public String createAccount(@Validated custCredModel ccm, Model model) {
 		System.out.println("sign Up page creating account");
@@ -142,29 +118,5 @@ public class homeController {
 		return "home";
 	}
 
-	/*
-	 * @PostMapping("/otpAction")
-	 * 
-	 * @ResponseBody public String sendOTP(@RequestParam("email") String email) {
-	 * finalemail = email; generateotp = (new emailSend()).sendEmail(email);
-	 * 
-	 * return generateotp; // Return the generated OTP as the response }
-	 */
-
-	/*
-	 * @PostMapping("/validateOTP")
-	 * 
-	 * @ResponseBody public String validateOTP(@RequestParam("otp12") String otp) {
-	 * System.out.print(otp);
-	 * 
-	 * if (otp.equals(generateotp)) { return "valid"; } else { // OTP is invalid
-	 * return "invalid"; } }
-	 * 
-	 * @RequestMapping(value = "/updatepwd") public String
-	 * usersignup(@RequestParam("psd2") String p2, Model model) {
-	 * cdao.updatePassword(p2, finalemail);
-	 * 
-	 * return "signIn"; }
-	 */
-
+	
 }

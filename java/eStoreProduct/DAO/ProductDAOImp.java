@@ -1,11 +1,19 @@
 package eStoreProduct.DAO;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 import java.sql.*;
-import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;import java.util.*;
 
 import eStoreProduct.model.Product;
 
 public class ProductDAOImp implements ProductDAO{
+	
+	JdbcTemplate jdbcTemplate;
 	
 	private static final String JDBC_DRIVER = "org.postgresql.Driver";
 	private static final String DB_URL = "jdbc:postgresql://192.168.110.48:5432/plf_training";
@@ -126,7 +134,8 @@ public class ProductDAOImp implements ProductDAO{
 		try {
 			Class.forName(JDBC_DRIVER);
 			Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-			String query = "SELECT * FROM productdetails WHERE id = ?";
+			System.out.println("productid recieved "+productId);
+			String query = "SELECT * FROM productsdata WHERE id = ?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, productId);
 			ResultSet resultSet = statement.executeQuery();
@@ -146,6 +155,7 @@ public class ProductDAOImp implements ProductDAO{
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
+		System.out.println("product before sending "+product);
 		return product;
 
 	}

@@ -43,6 +43,7 @@ public class ProductController {
 	@GetMapping("/products")
 	//@ResponseBody
 	public String showCategoryProducts(@RequestParam(value = "category", required = false) String category, Model model) {
+		System.out.println("based on category method");
 		List<Product> products;
 		if (category != null && !category.isEmpty()) {
 			products = pdaoimp.getProductsByCategory(category);
@@ -65,21 +66,24 @@ public class ProductController {
 
 	    return "productCatalog";
 	}	
-	@RequestMapping(value = "/prodDescription", method = RequestMethod.GET)
-	public String getSignUpPage(Model model) {
+	@RequestMapping(value = "/prodDescription", method = RequestMethod.POST)
+	public String getSignUpPage(@RequestParam(value = "productId", required = false) int productId, Model model) {
 		System.out.println("product description Page");
+		Product product=pdaoimp.getProductById(productId);
+		System.out.println("product recieved when image is clicked "+product);
+		model.addAttribute("oneproduct",product);
 
 		// call the view
 		return "prodDescription";
 	}
 	//prodDescription
 	
-	@GetMapping("/products/{productId}")
-	public String showProductDetails(@PathVariable int productId, Model model) {
-
-		Product product = pdaoimp.getProductById(productId);
-		model.addAttribute("product", product);
-		return "productDetails";
-	}
+	/*
+	 * @GetMapping("/products/{productId}") public String
+	 * showProductDetails(@PathVariable int productId, Model model) {
+	 * 
+	 * Product product = pdaoimp.getProductById(productId);
+	 * model.addAttribute("product", product); return "productDetails"; }
+	 */
 	
 }
