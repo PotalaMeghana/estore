@@ -1,15 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>Payment Page</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
+    <h1>Payment Page</h1>
+
     <button id="rzp-button1" onclick="openCheckout('${orderId}')">Pay</button>
 
-    <form action="OrderCreation" method="POST" name="razorpayForm">
+    <form action="invoice" method="POST" name="razorpayForm">
         <input id="razorpay_payment_id" type="hidden" name="razorpay_payment_id" />
         <input id="razorpay_order_id" type="hidden" name="razorpay_order_id" />
         <input id="razorpay_signature" type="hidden" name="razorpay_signature" />
@@ -18,7 +20,7 @@
     <script>
         function openCheckout(orderId) {
             var options = {
-                key: "rzp_test_Xe8wdVU6XUBoBd",
+                key: "rzp_test_Eu94k5nuplVQzA",
                 name: "E-Cart",
                 amount: <%= request.getParameter("amount") %>,
                 description: "SLAM payments",
