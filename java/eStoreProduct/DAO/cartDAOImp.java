@@ -4,14 +4,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import  eStoreProduct.model.*;
+import eStoreProduct.model.Product;
+
 @Component
-public class cartDAOImp implements cartDAO  {
+public class cartDAOImp implements cartDAO {
 	private static final String JDBC_DRIVER = "org.postgresql.Driver";
 	private static final String DB_URL = "jdbc:postgresql://192.168.110.48:5432/plf_training";
 	private static final String USERNAME = "plf_training_admin";
@@ -30,13 +31,13 @@ public class cartDAOImp implements cartDAO  {
 				System.out.println("inserted into cart");
 				return productId;
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return -1;
 		}
 		return -1;
 	}
-	
+
 	public int removeFromCart(int productId, int customerId) {
 		try {
 			Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
@@ -49,44 +50,46 @@ public class cartDAOImp implements cartDAO  {
 				System.out.println("deleted from  cart");
 				return productId;
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return -1;
 		}
 		return -1;
 	}
-	
+
 	public List<Product> getCartProds(int cust_id) {
-		ArrayList<Product> products = new ArrayList<Product>();
+		List<Product> products = new ArrayList<>();
 		System.out.println(cust_id + " from model");
 		try {
 			Class.forName(JDBC_DRIVER);
 			Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-			//System.out.println(cust_id + " from model");
-			String query = "select pd.* from productsdata pd ,slam_cart sc where sc.c_id=? and sc.p_id=pd.id";
+			String query = "SELECT pd.* FROM slam_Products pd, slam_cart sc WHERE sc.c_id = ? AND sc.p_id = pd.prod_id";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, cust_id);
 			ResultSet resultSet = statement.executeQuery();
 
 			while (resultSet.next()) {
-				int id = resultSet.getInt("id");
-				String name = resultSet.getString("name");
-				double price = resultSet.getDouble("price");
-				String description = resultSet.getString("description");
-				String imageUrl = resultSet.getString("image_url");
-				String category = resultSet.getString("category");
-				Product product = new Product(id, name, price, description, imageUrl, category);
+				int prod_id = resultSet.getInt("Prod_id");
+				String prod_title = resultSet.getString("prod_title");
+				int prod_prct_id = resultSet.getInt("prod_prct_id");
+				int prod_gstc_id = resultSet.getInt("prod_gstc_id");
+				String prod_brand = resultSet.getString("prod_brand");
+				String image_url = resultSet.getString("image_url");
+				String prod_desc = resultSet.getString("prod_desc");
+				int reorderLevel = resultSet.getInt("reorderLevel");
+				Product product = new Product(prod_id, prod_title, prod_prct_id, prod_gstc_id, prod_brand, image_url,
+						prod_desc, reorderLevel);
 				products.add(product);
 			}
 			System.out.println(products.toString());
 			resultSet.close();
 			statement.close();
 			connection.close();
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return products;
 	}
-	
+
 }

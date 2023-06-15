@@ -1,18 +1,20 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+    <%@ page import="eStoreProduct.model.custCredModel" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Payment Page</title>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <h1>Payment Page</h1>
-
-
-    <form action="OrderCreation" method="POST" name="razorpayForm">
+     <form action="OrderCreation" method="POST" name="razorpayForm">
         <label for="username">User name:</label>
-        <input type="text" id="username" name="username" required><br><br>
+        <h1>${cust != null ? cust.custName : ""}</h1><br><br>
         
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required><br><br>
@@ -32,7 +34,6 @@
         
         <input type="submit" value="Pay"> 
     </form>
-
-    	
+    
 </body>
 </html>

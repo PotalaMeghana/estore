@@ -17,7 +17,7 @@ import eStoreProduct.DAO.cartDAO;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+import eStoreProduct.BLL.BLLClass;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -25,6 +25,7 @@ public class CartController {
 	cartDAO cartimp;
 	private final ProductDAO pdaoimp;
 	List<Product> alist=new ArrayList<>();
+	BLLClass obj = new BLLClass();
 	@Autowired
 	public CartController(cartDAO cartdao,ProductDAO productdao)
 	{
@@ -46,7 +47,7 @@ public class CartController {
 		return cartimp.addToCart(productId, cust1.getCustId()) + " Added to cart";}
 		else {
 			Product product=pdaoimp.getProductById(productId);
-		System.out.println("added to cart "+product.getId());
+		System.out.println("added to cart "+product.getProd_id());
 		System.out.println(product);
 			alist.add(product);
 			return "added to cart";
@@ -76,7 +77,7 @@ public class CartController {
 			System.out.println("remove from cart nonlogin");
 			for(Product p:alist)
 			{
-			if(p.getId()==productId)
+			if(p.getProd_id()==productId)
 			
 			alist.remove(p);
 			}
@@ -91,12 +92,15 @@ public class CartController {
     public String userCartItems(@RequestParam(value = "userId", required = true) int cust_id, Model model,HttpSession session)
             throws NumberFormatException, SQLException {
         System.out.println("carts called1");
+        double cartt = 0;
         //ProductDAO pdao = new ProductDAO();
         custCredModel cust1 = (custCredModel) session.getAttribute("customer");
 		if(cust1!=null)
 		{        
-			List<Product> products = cartimp.getCartProds(cust_id);
-	        
+			List<Product> products = cartimp.getCartProds(cust1.getCustId());
+			//cartt = obj.calcartp(products);
+			//System.out.println("cartt value "+cartt);
+		//	model.addAttribute("cartt", cartt);
 	        // Set the products attribute in the model
 	        model.addAttribute("products", products);
 	        

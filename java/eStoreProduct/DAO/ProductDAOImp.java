@@ -1,20 +1,18 @@
 package eStoreProduct.DAO;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;import java.util.*;
-
+import eStoreProduct.model.Category;
 import eStoreProduct.model.Product;
 
-public class ProductDAOImp implements ProductDAO{
-	
-	JdbcTemplate jdbcTemplate;
-	
+public class ProductDAOImp implements ProductDAO {
+
 	private static final String JDBC_DRIVER = "org.postgresql.Driver";
 	private static final String DB_URL = "jdbc:postgresql://192.168.110.48:5432/plf_training";
 	private static final String USERNAME = "plf_training_admin";
@@ -26,29 +24,34 @@ public class ProductDAOImp implements ProductDAO{
 		return null;
 	}
 
-	public List<Product> getProductsByCategory(String category) {
+	public List<Product> getProductsByCategory(Integer category_id) {
 		List<Product> products = new ArrayList<>();
-		System.out.println(category + " from model");
+
 		try {
 			Class.forName(JDBC_DRIVER);
 			Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-			System.out.println(category + " from model");
-			String query = "SELECT * FROM productsdata WHERE category = ? ";
+
+			String query = "SELECT * FROM slam_Products WHERE prod_prct_id = ?";
 			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setString(1, category);
+			statement.setInt(1, category_id);
 			ResultSet resultSet = statement.executeQuery();
 
 			while (resultSet.next()) {
-				int id = resultSet.getInt("id");
-				String name = resultSet.getString("name");
-				double price = resultSet.getDouble("price");
-				String description = resultSet.getString("description");
-				String imageUrl = resultSet.getString("image_url");
+				int prod_id = resultSet.getInt("Prod_id");
+				String prod_title = resultSet.getString("prod_title");
+				int prod_prct_id = resultSet.getInt("prod_prct_id");
+				int prod_gstc_id = resultSet.getInt("prod_gstc_id");
+				String prod_brand = resultSet.getString("prod_brand");
+				String image_url = resultSet.getString("image_url");
+				String prod_desc = resultSet.getString("prod_desc");
+				int reorderLevel = resultSet.getInt("reorderLevel");
 
-				Product product = new Product(id, name, price, description, imageUrl, category);
+				Product product = new Product(prod_id, prod_title, prod_prct_id, prod_gstc_id, prod_brand, image_url,
+						prod_desc, reorderLevel);
+
 				products.add(product);
 			}
-			System.out.println(products.toString());
+
 			resultSet.close();
 			statement.close();
 			connection.close();
@@ -60,25 +63,29 @@ public class ProductDAOImp implements ProductDAO{
 	}
 
 	public List<Product> getAllProducts() {
-		List<Product> products = new ArrayList<Product>();
+		List<Product> products = new ArrayList<>();
 
 		try {
 			Class.forName(JDBC_DRIVER);
 			Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
-			String query = "SELECT * FROM productsData";
+			String query = "SELECT * FROM slam_Products";
 			PreparedStatement statement = connection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();
 
 			while (resultSet.next()) {
-				int id = resultSet.getInt("id");
-				String name = resultSet.getString("name");
-				double price = resultSet.getDouble("price");
-				String description = resultSet.getString("description");
-				String imageUrl = resultSet.getString("image_url");
-				String category = resultSet.getString("category");
+				int prod_id = resultSet.getInt("Prod_id");
+				String prod_title = resultSet.getString("prod_title");
+				int prod_prct_id = resultSet.getInt("prod_prct_id");
+				int prod_gstc_id = resultSet.getInt("prod_gstc_id");
+				String prod_brand = resultSet.getString("prod_brand");
+				String image_url = resultSet.getString("image_url");
+				String prod_desc = resultSet.getString("prod_desc");
+				int reorderLevel = resultSet.getInt("reorderLevel");
 
-				Product product = new Product(id, name, price, description, imageUrl, category);
+				Product product = new Product(prod_id, prod_title, prod_prct_id, prod_gstc_id, prod_brand, image_url,
+						prod_desc, reorderLevel);
+
 				products.add(product);
 			}
 
@@ -92,8 +99,8 @@ public class ProductDAOImp implements ProductDAO{
 		return products;
 	}
 
-	public List<String> getAllCategories() {
-		List<String> categories = new ArrayList<>();
+	public List<Category> getAllCategories() {
+		List<Category> categories = new ArrayList<>();
 
 		try {
 			// Load the JDBC driver
@@ -103,7 +110,7 @@ public class ProductDAOImp implements ProductDAO{
 			Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
 			// Prepare the SQL query
-			String query = "SELECT DISTINCT category FROM productsData";
+			String query = "SELECT * FROM slam_ProductCategories";
 			PreparedStatement statement = connection.prepareStatement(query);
 
 			// Execute the query
@@ -112,10 +119,13 @@ public class ProductDAOImp implements ProductDAO{
 			// Process the result set
 			while (resultSet.next()) {
 				// Retrieve category information from the result set
-				String category = resultSet.getString("category");
+				int prct_id = resultSet.getInt("prct_id");
+				String prct_title = resultSet.getString("prct_title");
+				String prct_desc = resultSet.getString("prct_desc");
+				Category ctg = new Category(prct_id, prct_title, prct_desc);
 
 				// Add the category to the list
-				categories.add(category);
+				categories.add(ctg);
 			}
 
 			// Close the result set, statement, and connection
@@ -129,36 +139,35 @@ public class ProductDAOImp implements ProductDAO{
 		return categories;
 	}
 
-	public Product getProductById(int productId) {
+	public Product getProductById(Integer productId) {
 		Product product = null;
 		try {
 			Class.forName(JDBC_DRIVER);
 			Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-			System.out.println("productid recieved "+productId);
-			String query = "SELECT * FROM productsdata WHERE id = ?";
+			String query = "SELECT * FROM slam_Products WHERE prod_id = ?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, productId);
 			ResultSet resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
 				// Retrieve the product details from the result set
-				int id = resultSet.getInt("id");
-				String name = resultSet.getString("name");
-				double price = resultSet.getDouble("price");
-				String description = resultSet.getString("description");
-				String imageUrl = resultSet.getString("image_url");
-				String category = resultSet.getString("category");
+				int prod_id = resultSet.getInt("Prod_id");
+				String prod_title = resultSet.getString("prod_title");
+				int prod_prct_id = resultSet.getInt("prod_prct_id");
+				int prod_gstc_id = resultSet.getInt("prod_gstc_id");
+				String prod_brand = resultSet.getString("prod_brand");
+				String image_url = resultSet.getString("image_url");
+				String prod_desc = resultSet.getString("prod_desc");
+				int reorderLevel = resultSet.getInt("reorderLevel");
 
 				// Create a new Product object
-				product = new Product(id, name, price, description, imageUrl, category);
+				product = new Product(prod_id, prod_title, prod_prct_id, prod_gstc_id, prod_brand, image_url, prod_desc,
+						reorderLevel);
 			}
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("product before sending "+product);
 		return product;
-
 	}
-	
 
 }

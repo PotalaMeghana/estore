@@ -2,6 +2,8 @@
 <%@ page import="java.util.*" %>
 <%@ page import="eStoreProduct.model.Product" %>
 <%@ page import="eStoreProduct.model.custCredModel" %>
+<%@ page import="eStoreProduct.DAO.ProdStockDAO" %>
+<%@ page import="eStoreProduct.DAO.ProdStockDAOImp" %>
 
 <!DOCTYPE html>
 <html>
@@ -18,25 +20,26 @@
 <div class="container mt-5">
     <div class="row mt-4">
         <%
-        custCredModel cust1 = (custCredModel) session.getAttribute("customer");
-        HashMap<Integer, Integer> hm = (HashMap<Integer, Integer>) request.getAttribute("hm");
-        HashMap<Integer, Integer> hmp = (HashMap<Integer, Integer>) request.getAttribute("h");
+        custCredModel cust = (custCredModel) request.getAttribute("customer");
+       // HashMap<Integer, Integer> hm = (HashMap<Integer, Integer>) request.getAttribute("hm");
+      //  HashMap<Integer, Integer> hmp = (HashMap<Integer, Integer>) request.getAttribute("h");
+        ProdStockDAO ps = new ProdStockDAOImp();
 
         List<Product> products = (List<Product>) request.getAttribute("products");
         int nop = 0, shpch = 0;
         double totalCost = 0;
 
         for (Product product : products) {
-            int quantity = hm.get(product.getId());
-            int productCost = hmp.get(product.getId());
+            int quantity = 1;
+            int productCost = 10000;
             totalCost+=productCost;
         %>
         <div class="col-lg-4 col-md-6 mb-4">
             <div class="card h-100">
-                <img class="card-img-top" src="<%= product.getImageUrl() %>" alt="<%=product.getName() %>">
+                <img class="card-img-top" src="<%= product.getProd_title() %>" alt="<%=product.getProd_title() %>">
                 <div class="card-body">
-                    <h5 class="card-title"><%= product.getName() %></h5>
-                    <p class="card-text"><%= product.getPrice() %></p>
+                    <h5 class="card-title"><%= product.getProd_title() %></h5>
+                    <p class="card-text"><%= ps.getProdPriceById(product.getProd_id()) %></p>
                     <p class="card-text">Quantity: <%= quantity %></p>
                     <p class="card-text">Subtotal: <%= productCost %></p>
                 </div>
@@ -48,8 +51,24 @@
     </div>
 </div>
    <div id="cont">
-                <label for="custSAddress">Shipping Address:</label>
-                <input type="text" class="ship" id="custSAddress"  value="<%=cust1.getCustSAddress()%>"><br>
+                <form action="orderFunction()" method="post">    
+        <label>CustomerId:</label>
+        <input type="text" id="custId" name="custId" value="${cust != null ? cust.custId : ""}" type="hidden"><br>
+
+        <label for="custName">Name:</label>
+        <input type="text" id="custName" name="custName" value="${cust != null ? cust.custName : ""}" readonly><br>
+
+        <label for="custMobile">Mobile:</label>
+        <input type="text" id="custMobile" name="custMobile" value="${cust != null ? cust.custMobile : ""}"><br>
+
+        <label for="custSAddress">Shipping Address:</label>
+        <input type="text" id="custSAddress" name="custSAddress" value="${cust != null ? cust.custSAddress : ""}"><br>
+
+        <label for="custsPincode">Shipment Pincode:</label>
+        <input type="text" id="custsPincode" name="custSpincode" value="${cust != null ? cust.custSpincode : ""}"><br>
+
+        <input type="submit" value="ok">
+    </form>
         </div>
 <div>
 <p class="card-text">TotalCost: <%= totalCost %></p>
@@ -64,13 +83,20 @@
 </div>
 
 <script>
-function update(shipadd)
+function orderFunction()
 {
+	var mobile=$("#custMobile").val();
+	var custsaddress=$("#custSAddress").val();
+	var spincode=$("#custSpincode").val();
 	 $.ajax({
 		    url: "confirmShipmentAddress",
-		    method: 'GET',
-		    data: { shipmentadd: shipadd },
+		    method: 'POST',
+		    data: { mobile:mobile,
+		    	custsaddress:custsaddress,
+		    	spincode:spincode
+		    	},
 		    success: function(response) {
+		    	document.getElementById("cont").innerHTML="UPDATED DETAILS";
 		    },
 		    error: function(xhr, status, error) {
 		      console.log('AJAX Error: ' + error);
@@ -87,6 +113,7 @@ function continuenext()
         console.log("Back");
         history.back();
     });
+   
 </script>
 </body>
 </html>

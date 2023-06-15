@@ -24,12 +24,12 @@
         <property name="prefix" value="/WEB-INF/views/" />
         <property name="suffix" value=".jsp" />
     </bean>
-<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.postgresql.Driver" />
-        <property name="url" value="jdbc:postgresql://192.168.110.48:5432/plf_training"/>
-        <property name="username" value="plf_training_admin" />
-        <property name="password" value="pff123" />
-    </bean>
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	    <property name="driverClassName" value="org.postgresql.Driver" />
+	     <property name="url" value="jdbc:postgresql://192.168.110.48:5432/plf_training" />
+	    <property name="username" value="plf_training_admin" />
+	    <property name="password" value="pff123" />
+	</bean>
 
 	 <bean id="entityManagerFactory" 
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
@@ -53,44 +53,26 @@
 
 	<!-- byName example -->
     <bean id="customerdao" class="eStoreProduct.DAO.customerDAOImp" autowire="byName"/> 
-        <bean id="catDAO" class="eStoreProduct.DAO.CategoryDAO" autowire="byName"/> 
-    
-    
-    
-    
-    <!-- byName example -->
-    <bean id="cartdao" class="eStoreProduct.DAO.cartDAOImp" autowire="byName"/> 
-    
+    <bean id="productdao" class="eStoreProduct.DAO.ProductDAOImp" autowire="byName"/> 
     
         <!-- byName example -->
-    <bean id="admindao" class="eStoreProduct.DAO.adminDAOImp" autowire="byName"/> 
-    
-    <!-- byName example -->
-    <bean id="ord" class="eStoreProduct.DAO.OrderDAOImp" autowire="byName"/> 
-    
-     <!-- byName example -->
-    <bean id="omd" class="eStoreProduct.model.orderModel" autowire="byName"/> 
+    <!-- 
     
     
     
-    <!-- Configure the ProductDAO bean -->
+    
+      Configure the ProductDAO bean
     <bean id="productDAO" class="eStoreProduct.DAO.ProductDAO" />
-    
-    
+    <bean id="catDAO" class="eStoreProduct.DAO.CategoryDAO" />
 
-    <!-- Configure the ProductService bean -->
+    Configure the ProductService bean
     <bean id="productService" class="eStoreProduct.ProductsService.ProductService">
         <constructor-arg ref="productDAO" />
     </bean>
     <bean id="catService" class="eStoreProduct.ProductsService.CategoryService">
         <constructor-arg ref="catDAO" />
-    </bean>
+    </bean> -->
     
-    <bean id="appConfig" class="eStoreProduct.ProductsService.AppConfig" />
-
-    <bean id="razorpyService" factory-bean="appConfig" factory-method="razorpayService">
-        <property name="razorpayApiKey" value="rzp_test_Xe8wdVU6XUBoBd" />
-        <property name="razorpayApiSecret" value="Y0kKhdQLoVJQALAJ4iHNN0Sq" />
-    </bean>
+    
     
 </beans>
